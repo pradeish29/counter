@@ -1,0 +1,83 @@
+import tkinter as tk
+import datetime
+import winsound as ws
+
+class Countdown(tk.Frame):
+        def __init__(self,master):
+                super().__init__(master)
+                self.cw()
+                self.sw()
+                self.seconds_left=0
+                self.timer_on=False
+
+        def cw(self):
+                self.label=tk.Label(self,text="Enter time in Sec:")
+                self.entry=tk.Entry(self,justify="center")
+                self.entry.focus_set()
+                self.reset=tk.Button(self,text="reset",command=self.reset_button)
+                self.start=tk.Button(self,text="start",command=self.start_button)
+                self.stop=tk.Button(self,text="stop",command=self.stop_button)
+
+        def sw(self):
+                self.label.pack()
+                self.entry.pack()
+                self.start.pack()
+                self.stop.pack()
+                self.reset.pack()
+
+        def count(self):
+                self.label["text"]=self.convert_sec_left_time()
+
+                if self.seconds_left:
+                        self.seconds_left-=1
+                        self.timer_on=self.after(1000,self.count)
+                else:
+                        self.timer_on=False
+                        ws.Beep(400,True)
+                        ws.PlaySound("Alarm Clock Sound", ws.SND_FILENAME)
+                        self.reset_button()
+
+        def reset_button(self):
+                self.seconds_left=0
+                self.stop_timer()
+                self.timer_on=False
+                self.label["text"]="Enter the time in sec:"
+                self.start.forget()
+                self.stop.forget()
+                self.reset.forget()
+                self.start.pack()
+                self.stop.pack()
+                self.reset.pack()
+
+        def start_button(self):
+                self.seconds_left=int(self.entry.get())
+                self.stop_timer()
+                self.count()
+                self.start.forget()
+                self.stop.forget()
+                self.reset.forget()
+                self.start.pack()
+                self.stop.pack()
+                self.reset.pack()
+
+        def stop_button(self):
+                self.seconds_left=int(self.entry.get())
+                self.stop_timer()
+
+        def stop_timer(self):
+                if self.timer_on:
+                        self.after_cancel(self.timeron)
+                        self.timer_on=False
+
+        def convert_sec_left_time(self):
+                return datetime.timedelta(seconds=self.seconds_left)
+
+if __name__=="__main__":
+        root=tk.Tk()
+        root.resizable(True,True)
+        countdown=Countdown(root)
+        countdown.pack()
+
+        root.mainloop()
+         
+                        
